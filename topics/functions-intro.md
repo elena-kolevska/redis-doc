@@ -68,7 +68,7 @@ Because of that, data loss also implies losing functions stored in the database,
 Like all other operations in Redis, the execution of a function is atomic.
 A function's execution blocks all server activities during its entire time, similarly to the semantics of [transactions](/topics/transactions).
 These semantics mean that all of the script's effects either have yet to happen or had already happened.
-The blocking semantics of an executed function apply to all connected clients at all times.
+The blocking semantics of an executed function applies to all connected clients at all times.
 Because running a function block the Redis server, functions are meant to finish executing quickly, so you should avoid using long-running functions.
 
 ## Loading libraries and functions
@@ -92,7 +92,7 @@ Every library needs to include at least one registered function to load successf
 A registered function is named and acts as an entry point to the library.
 When the target execution engine handles the `FUNCTION LOAD` command, it registers the library's functions.
 The Lua engine registers the functions in a library by running its source code upon loading it.
-You need instruct the Lua engine explicity about registered functions to the `redis.register_function()` API.
+You need to explicitly register your functions in the Lua engine through the `redis.register_function()` API.
 
 The following snippet demonstrates a simple library.
 It registers a single Redis function named _knockknock_ that returns a string reply:
@@ -106,7 +106,7 @@ redis.register_function(
 
 In the example above, we provide two arguments about the function to Lua's `redis.register_function()` API: its registered name and callback.
 
-We can load our now library and use `FCALL` to call the function.
+We can now load our library and use `FCALL` to call the function.
 Because _redis-cli_ doesn't play nicely with newlines, we'll just strip these from the code:
 
 ```
@@ -353,20 +353,20 @@ And your Redis log file should have lines in it that are similar to:
 
 ## Function Flags
 
-Looking at the example above, the library introduces 3 functions, `my_hset`, `my_hgetall`, and `my_hlastmodified`. The last 2 functions are not perforning any writes, so we should be able to run them using `FCALL_RO` on a `readonly` replica. But if we try to invoke them we will get the following error:
+Looking at the example above, the library introduces 3 functions, `my_hset`, `my_hgetall`, and `my_hlastmodified`. The last 2 functions do not perform any writes, so we should be able to run them using `FCALL_RO` on a `readonly` replica, but if we try to invoke them we will get the following error:
 
 ```
 > FCALL_RO my_hgetall 1 myhash
 (error) ERR Can not execute a function with write flag using fcall_ro.
 ```
 
-This is happened because, by default, a function can perfrom read and writes commands, and Redis has no way to know what a function might try to do. So Redis assumes the wrost and not allow running the function on the following cases:
+This happens because, by default, a function can perform read and write commands, and Redis has no way of knowing what a function might try to do, so it assumes the worst and won't run functions in the following cases:
 
-1. On readonly replica
+1. On readonly replicas
 2. Using `EVAL_RO`
-3. If a disc error detacted
+3. If a disc error is detected
 
-It is possible to tell Redis that a function do not perform any writes, is such case Redis will allow running using `FCALL_RO` or on `readonly` replica and enforce no writes are performed (any attempt to call a `write` command will result in an error). This is done using the `no-writes` function flag. In order to specify function flags we need to use the [named arguments](lua-api#redis.register_function_named_args) version of [`redis.register_function`](lua-api#redis.register_function()). We only need to change the function registration part of our code:
+It is possible to tell Redis that a function does not perform any writes though; in such a case Redis will allow running using `FCALL_RO` or on `readonly` replica and will enforce that no writes are performed (any attempt to call a `write` command will result in an error). This is done using the `no-writes` function flag. In order to specify function flags we need to use the [named arguments](lua-api#redis.register_function_named_args) version of [`redis.register_function`](lua-api#redis.register_function()). We only need to change the function registration part of our code:
 
 ```lua
 redis.register_function('my_hset', my_hset)
@@ -382,7 +382,7 @@ redis.register_function{
 }
 ```
 
-Now Redis will allows us to run both, `my_hgetall` and `my_hlastmodified`, using `FCALL_RO` and on `readonly` replica:
+Now Redis will allow us to run both, `my_hgetall` and `my_hlastmodified`, using `FCALL_RO` and on `readonly` replica:
 
 ```
 redis> FCALL_RO my_hgetall 1 myhash
@@ -394,11 +394,11 @@ redis> FCALL_RO my_hlastmodified 1 myhash
 "1640772721"
 ```
 
-### Default behaviure of functions (if no flags is given):
+### Default behaviour of functions (if no flags are given):
 
 1. Allow functions to read and write
 2. Do not run functions on OOM
 3. Do not run functions on stale replica
-4. Allow functions on cluster
+4. Allow functions on a cluster
 
 For full documentation of the supported flags refer to [Script Flags](lua-api#script_flags)

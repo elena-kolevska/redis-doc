@@ -10,21 +10,21 @@ Redis hashes are record types structured as collections of field-value pairs.
 You can use hashes to represent basic objects and to store groupings of counters, among other things.
 
 {{< clients-example hash_tutorial set_get_all >}}
-    > hset bike:1 model Deimos brand Ergonom type 'Enduro bikes' price 4972
-    (integer) 4
-    > hget bike:1 model
-    "Deimos"
-    > hget bike:1 price
-    "4972"
-    > hgetall bike:1
-    1) "model"
-    2) "Deimos"
-    3) "brand"
-    4) "Ergonom"
-    5) "type"
-    6) "Enduro bikes"
-    7) "price"
-    8) "4972"
+> hset bike:1 model Deimos brand Ergonom type 'Enduro bikes' price 4972
+(integer) 4
+> hget bike:1 model
+"Deimos"
+> hget bike:1 price
+"4972"
+> hgetall bike:1
+1) "model"
+2) "Deimos"
+3) "brand"
+4) "Ergonom"
+5) "type"
+6) "Enduro bikes"
+7) "price"
+8) "4972"
 
 {{< /clients-example >}}
 
@@ -36,21 +36,21 @@ The command [`HSET`](/commands/hset) sets multiple fields of the hash, while [`H
 a single field. [`HMGET`](/commands/hmget) is similar to [`HGET`](/commands/hget) but returns an array of values:
 
 {{< clients-example hash_tutorial hmget >}}
-    > hmget user:1000 username birthyear no-such-field
-    1) "antirez"
-    2) "1977"
-    3) (nil)
+> hmget user:1000 username birthyear no-such-field
+1) "antirez"
+2) "1977"
+3) (nil)
 {{< /clients-example >}}
 
 There are commands that are able to perform operations on individual fields
 as well, like [`HINCRBY`](/commands/hincrby):
 
-{{ < clients-example hash_tutorial hincrby > }}
-    > hincrby bike:1 price 100
-    (integer) 5072
-    > hincrby bike:1 price -100
-    (integer) 4972
-{{ < /clients-example > }}
+{{< clients-example hash_tutorial hincrby >}}
+> hincrby bike:1 price 100
+(integer) 5072
+> hincrby bike:1 price -100
+(integer) 4972
+{{< /clients-example >}}
 
 You can find the [full list of hash commands in the documentation](https://redis.io/commands#hash).
 
@@ -69,26 +69,8 @@ See the [complete list of hash commands](https://redis.io/commands/?group=hash).
 
 ## Examples
 
-* Represent a basic bike as a hash:
-```
-> HSET bike:1 model Deimos brand Ergonom type "Enduro bikes" price 4972
-(integer) 4
-> HGET bike:1 price
-"4972"
-> HGETALL bike:1
-1) "model"
-2) "Deimos"
-3) "brand"
-4) "Ergonom"
-5) "type"
-6) "Enduro bikes"
-7) "price"
-8) "4972"
-```
-
 * Store counters for the number of times bike:1 has been ridden, has crashed, or has changed owners:
 {{< clients-example hash_tutorial incrby_get_mget >}}
-```
 > HINCRBY bike:1:stats rides 1
 (integer) 1
 > HINCRBY bike:1:stats rides 1
@@ -104,8 +86,7 @@ See the [complete list of hash commands](https://redis.io/commands/?group=hash).
 > HMGET bike:1:stats owners crashes
 1) "1"
 2) "1"
-```
-{{ < /clients-example > }}
+{{< /clients-example >}}
 
 
 ## Performance
